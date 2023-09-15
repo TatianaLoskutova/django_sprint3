@@ -15,8 +15,8 @@ class Category(models.Model):
     slug = models.SlugField(
         unique=True,
         blank=False,
-        help_text='Идентификатор страницы для URL;' +
-        ' разрешены символы латиницы, цифры, дефис и подчёркивание.',
+        help_text='Идентификатор страницы для URL;'
+        + ' разрешены символы латиницы, цифры, дефис и подчёркивание.',
         verbose_name='Идентификатор'
     )
     is_published = models.BooleanField(
