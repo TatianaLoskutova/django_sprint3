@@ -10,10 +10,10 @@ def index(request):
     template = 'blog/index.html'
     current_time = datetime.now()
     post_list = Post.objects.all().filter(
-            pub_date__lte=current_time,
-            is_published=True,
-            category__is_published=True
-        ).order_by('-pub_date')[0:5]
+        pub_date__lte=current_time,
+        is_published=True,
+        category__is_published=True
+    ).order_by('-pub_date')[0:5]
     context = {
         'post_list': post_list,
     }
@@ -43,7 +43,7 @@ def category_posts(request, category_slug: str):
         Category,
         slug=category_slug,
         is_published=True
-        )
+    )
     if not category.is_published:
         return HttpResponseNotFound('Категория не найдена')
     post_list = Post.objects.filter(
