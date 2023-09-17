@@ -1,33 +1,38 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseNotFound
-
 from datetime import datetime
+
+from django.shortcuts import render, get_object_or_404
 
 from blog.models import Post, Category
 
 
 def index(request):
     template = 'blog/index.html'
+    COUNT_OF_POSTS = 5
     current_time = datetime.now()
     post_list = Post.objects.all().filter(
         pub_date__lte=current_time,
         is_published=True,
         category__is_published=True
-    ).order_by('-pub_date')[0:5]
+    ).order_by('-pub_date')[:COUNT_OF_POSTS]
     context = {
-        'post_list': post_list,
+        'post_list': post_list
     }
     return render(request, template, context)
 
 
+def get_published_posts():
+    current_time = datetime.now()
+    return Post.objects.filter(
+        is_published=True,
+        pub_date__lte=current_time
+    )
+
+
 def post_detail(request, id: int):
     template = 'blog/detail.html'
-    current_time = datetime.now()
     post = get_object_or_404(
-        Post,
+        get_published_posts(),
         id=id,
-        is_published=True,
-        pub_date__lte=current_time,
         category__is_published=True
     )
     context = {
@@ -38,21 +43,14 @@ def post_detail(request, id: int):
 
 def category_posts(request, category_slug: str):
     template = 'blog/category.html'
-    current_time = datetime.now()
     category = get_object_or_404(
         Category,
         slug=category_slug,
         is_published=True
     )
-    if not category.is_published:
-        return HttpResponseNotFound('Категория не найдена')
-    post_list = Post.objects.filter(
-        category=category,
-        is_published=True,
-        pub_date__lte=current_time
-    )
+    post_list = get_published_posts().filter(category=category)
     context = {
         'category': category,
-        'post_list': post_list,
+        'post_list': post_list
     }
     return render(request, template, context)
